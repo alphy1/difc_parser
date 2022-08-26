@@ -8,7 +8,7 @@ from scrapy import Field
 from typing import Optional
 
 
-class CompanyInformation(scrapy.Item):
+class CompanyInformationItem(scrapy.Item):
 
     def __init__(self):
         super().__init__()
@@ -27,7 +27,7 @@ class CompanyInformation(scrapy.Item):
         self.fields["Share Capital"]: Optional[str] = Field(default=None)
 
 
-class DataProtection(scrapy.Item):
+class DataProtectionItem(scrapy.Item):
     def __init__(self):
         super().__init__()
         self.fields["Data Protection Officer Appointed"]: Optional[str] = Field(default=None)

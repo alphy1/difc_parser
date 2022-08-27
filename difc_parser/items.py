@@ -6,10 +6,15 @@
 import scrapy
 from scrapy import Field
 from typing import Optional
+from itemloaders.processors import TakeFirst, MapCompose, Join
+from scrapy.loader import ItemLoader
 
 
-class CompanyInformationItem(scrapy.Item):
+class DifcParserLoader(ItemLoader):
+    default_output_processor = TakeFirst()
 
+
+class DifcParserItem(scrapy.Item):
     def __init__(self):
         super().__init__()
         self.fields["Name"]: Optional[str] = Field(default=None)
@@ -20,29 +25,16 @@ class CompanyInformationItem(scrapy.Item):
         self.fields["Legal Structure"]: Optional[str] = Field(default=None)
         self.fields["Date of Incorporation"]: Optional[str] = Field(default=None)
         self.fields["Commercial License Validity Date"]: Optional[str] = Field(default=None)
-        self.fields["Directors"]: Optional[list] = Field(default=None)
-        self.fields["Shareholders"]: Optional[list] = Field(default=None)
-        self.fields["dnfbp"]: Optional[str] = Field(default=None)
+        self.fields["Directors"]: Optional[str] = Field(default=None)
+        self.fields["Shareholders"]: Optional[str] = Field(default=None)
+        self.fields["Company Secretary"]: Optional[str] = Field(default=None)
+        self.fields["DNFBP"]: Optional[str] = Field(default=None)
         self.fields["Financial Year End"]: Optional[str] = Field(default=None)
         self.fields["Share Capital"]: Optional[str] = Field(default=None)
-
-
-class DataProtectionItem(scrapy.Item):
-    def __init__(self):
-        super().__init__()
+        self.fields["Business activities"]: Optional[str] = Field(default=None)
+        self.fields["Registered Number"]: Optional[int] = Field(default=None, serializer=int)
+        self.fields["Registered offices"]: Optional[str] = Field(default=None)
         self.fields["Data Protection Officer Appointed"]: Optional[str] = Field(default=None)
         self.fields["Personal Data Processing Operations"]: Optional[str] = Field(default=None)
         self.fields["Transfer of Personal Data from the DIFC"]: Optional[str] = Field(default=None)
         self.fields["Processing of Special Categories of Personal Data"]: Optional[str] = Field(default=None)
-
-
-class DifcParserItem(scrapy.Item):
-    def __init__(self):
-        super().__init__()
-        self.fields["company_name"]: Optional[str] = Field(default=None)
-        self.fields["Status of registration"]: Optional[str] = Field(default=None)
-        self.fields["Business activities"]: Optional[list] = Field(default=None)
-        self.fields["Registered Number"]: Optional[int] = Field(default=None)
-        self.fields["Registered Offices"]: Optional[list] = Field(default=None)
-        self.fields["company_information"]: Optional[CompanyInformation] = Field(default=None)
-        self.fields["data_protection"]: Optional[DataProtection] = Field(default=None)

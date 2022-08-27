@@ -1,5 +1,7 @@
 import scrapy
 from scrapy import Request
+from difc_parser.items import DifcParserItem, DifcParserLoader
+import difflib
 
 
 class DIFCScrapy(scrapy.Spider):
@@ -19,16 +21,40 @@ class DIFCScrapy(scrapy.Spider):
                 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 
                 Safari/537.36' --compressed"""
             )
-            self.log(f"Requested page {page}")
             yield request
 
     def parse(self, response, **kwargs):
         links = response.css("h4 a::attr(href)").getall()
-        page = response.url.split("/")[-1].split('&')[0].split('=')[-1]
-        filename = f'page-{page}.html'
-        with open(filename, 'w') as f:
-            for link in links:
-                f.write(link+'\n')
-                print(str(link))
-        self.log(f'Saved file {filename}')
+        for link in links:
+            link = link.replace("\\", "").replace('"', "")
+            yield Request(url=link, callback=self.parse_companies_info)
 
+    def get_key(self, row):
+        key = row.css("p")[0].css("::text").get().split(':')[0].strip()
+        possible_fields = difflib.get_close_matches(key, DifcParserItem.fields, n=1)
+        if len(possible_fields) == 0:
+            self.logger.warn(f"Cannot recognize key '{key}'")
+            return
+        return possible_fields[0]
+
+    def get_value(self, row):
+        value = None
+        if len(row.css("p")) > 1:
+            value = row.css("p")[1].css("::text").get()
+            if value == "Not Applicable":
+                value = None
+        if value is not None:
+            value = value.strip()
+        return value
+
+    def parse_companies_info(self, response):
+        difc_loader = DifcParserLoader(item=DifcParserItem(), response=response)
+        containers = response.css("div.register-detail div.container")
+        for container in containers:
+            for row in container.css("div.row div.row"):
+                key = self.get_key(row)
+                value = self.get_value(row)
+                self.logger.info(f"Add key: '{key}' with value: '{value}'")
+                difc_loader.add_value(key, value)
+
+        return difc_loader.load_item()

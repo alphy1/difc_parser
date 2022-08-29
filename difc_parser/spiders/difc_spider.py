@@ -6,10 +6,17 @@ import difflib
 
 class DIFCScrapy(scrapy.Spider):
     name = 'difc'
-    num_pages = 2
+
+    def get_num_pages(self):
+        companies = getattr(self, "companies", None)
+        pages = getattr(self, "pages", None)
+        num_pages = int(companies) // 10 if companies is not None else 2
+        num_pages = int(pages) if pages is not None else num_pages
+        return num_pages
 
     def start_requests(self):
-        for page in range(1, self.num_pages + 1):
+        num_pages = self.get_num_pages()
+        for page in range(1, num_pages + 1):
             request = Request.from_curl(
                 f"""curl 'https://retailportal.difc.ae/api/v3/public-register/overviewList?page={page}&keywords 
                 =&companyName=&registrationNumber=&type=&status=&latitude=0&longitude=0&sortBy=&difc_website=1

@@ -6,12 +6,17 @@
 import scrapy
 from scrapy import Field
 from typing import Optional
-from itemloaders.processors import TakeFirst, MapCompose, Join
 from scrapy.loader import ItemLoader
 
 
+def difc_output_processor(values):
+    if len(values) == 0:
+        return None
+    return values[0]
+
+
 class DifcParserLoader(ItemLoader):
-    default_output_processor = TakeFirst()
+    default_output_processor = difc_output_processor
 
 
 class DifcParserItem(scrapy.Item):

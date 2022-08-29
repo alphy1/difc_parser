@@ -63,6 +63,7 @@ ROBOTSTXT_OBEY = True
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'difc_parser.pipelines.DifcParserPipeline': 300,
+    # 'difc_parser.pipelines.JsonWriterPipeline': 500,
 }
 MONGO_HOST = '127.0.0.1'  # Change in prod
 MONGO_PORT = 27017  # Change in prod

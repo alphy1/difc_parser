@@ -61,7 +61,7 @@ class DIFCScrapy(scrapy.Spider):
             for row in container.css("div.row div.row"):
                 key = self.get_key(row)
                 value = self.get_value(row)
-                self.logger.info(f"Add key: '{key}' with value: '{value}'")
-                difc_loader.add_value(key, value)
+                if key is not None:
+                    difc_loader.add_value(key, value)
 
         return difc_loader.load_item()

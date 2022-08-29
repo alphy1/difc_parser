@@ -6,17 +6,20 @@
 import scrapy
 from scrapy import Field
 from typing import Optional
+from itemloaders.processors import MapCompose, TakeFirst
 from scrapy.loader import ItemLoader
 
 
-def difc_output_processor(values):
-    if len(values) == 0:
-        return None
-    return values[0]
+# ref: https://stackoverflow.com/questions/52259779/scrapy-spider-converts-float-int-to-string
+def process_float_or_int(value):
+    try:
+        return eval(value)
+    except:
+        return value
 
 
 class DifcParserLoader(ItemLoader):
-    default_output_processor = difc_output_processor
+    default_output_processor = TakeFirst()
 
 
 class DifcParserItem(scrapy.Item):
@@ -37,7 +40,8 @@ class DifcParserItem(scrapy.Item):
         self.fields["Financial Year End"]: Optional[str] = Field(default=None)
         self.fields["Share Capital"]: Optional[str] = Field(default=None)
         self.fields["Business activities"]: Optional[str] = Field(default=None)
-        self.fields["Registered Number"]: Optional[int] = Field(default=None, serializer=int)
+        self.fields["Registered Number"]: Optional[int] = \
+            Field(default=None, input_processor=MapCompose(lambda x: process_float_or_int(x)))
         self.fields["Registered offices"]: Optional[str] = Field(default=None)
         self.fields["Data Protection Officer Appointed"]: Optional[str] = Field(default=None)
         self.fields["Personal Data Processing Operations"]: Optional[str] = Field(default=None)

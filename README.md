@@ -30,7 +30,8 @@ Example of extracted data:
 ## Prerequisites
 ``` 
 Python 3.8
-Docker
+docker
+docker-compose
 ```
 
 ## How to run
@@ -55,3 +56,7 @@ Also, you can specify pages to crawl, each page contains 10 companies:
 scrapy crawl difc -a pages=10
 ```
 By default ```scrapy crawl difc``` will parse 2 pages or 20 companies.
+5. Run tests:
+```
+make test
+```
